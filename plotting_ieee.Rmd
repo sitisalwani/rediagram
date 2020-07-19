@@ -1,0 +1,80 @@
+---
+title: "Plotting Data For Better Diagram in Research Paper"
+author: "Siti Salwani Yaacob"
+date: "6/24/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Introduction
+
+We all know that, using standard tool in Microcoft Word to plot a diagram quite mediocre (and the result is not as fancy as using MATLAB). I want something different. Something that look like a research. So, with my little talent using R Programming, I decided to use this platform to generate graph. 
+
+Consider I have a dummy dataset in Excel format. Generally, I load the dataset into the environment. Then I melt the dataset using 'melt function' in 'Reshape package'. After that, I plot it using ggplot. Sounds simple, right?
+
+The steps to plot the diagram is provided below;
+
+### 1. Import Data From Excel
+
+I actually just click at 'Import Dataset' in the environment box. Then it will automatically import the dataset into the environment. But you can just type code below, and it will work the same way. Just make sure, your dataset (excel) located in your working file.
+
+```{r echo=TRUE}
+
+library(readxl)
+
+data_accuracy<-read_excel("Accuracy_2.xlsx")
+print(data_accuracy)
+
+```
+
+
+### Change First Column To Row Name using Tibble Package
+
+Ohh.. This part is not important. It is for me, for my future benefit.
+
+```{r echo=TRUE}
+
+library(tibble)
+
+#change first column (scales)  to row name
+data_accuracy_col_to_row <- column_to_rownames(data_accuracy, var = "scales")
+print(data_accuracy_col_to_row)
+
+
+```
+
+
+
+### 2. Melt Dataset using Reshape2 Package
+
+This is the most important part for me. I thought I need to delete the 'scale' name in the row. Turns out it is unnecessary. I just straight away melt the data using melt function in 'reshape2 package'.
+
+```{r echo=TRUE}
+
+library(reshape2)
+
+accuracy_melt <- melt(data_accuracy, id.vars = "scales")
+head(accuracy_melt)
+
+
+```
+
+### 3. Plotting Data using GGPLOT2 Package
+
+This is the exciting part. Did you know any library that can create a fancy diagram just like GGPLOT did ? [Here is my best reference.](https://www.r-graph-gallery.com/289-control-ggplot2-title.html)
+
+```{r}
+library(ggplot2)
+library(dplyr)
+
+figure_accuracy <- ggplot(accuracy_melt, aes(x=scales, y=value, fill=variable)) + 
+  geom_bar(stat = "identity", position = position_dodge()) +
+  labs(y = "Accuracy (%)", x="Event Stream Scales") + ggtitle("Detection Accuracy")+
+  theme(plot.title = element_text(hjust = 0.5), legend.title = element_blank())
+
+print(figure_accuracy)
+```
+
